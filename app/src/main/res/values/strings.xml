@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Currency</string>
+
+    <string name="currency">Currency</string>
+    <string name="gold_price">Gold Price</string>
+    <string name="buy">Buy</string>
+    <string name="transfer">Transfer</string>
+    <string name="sell">Mua</string>
+    <string name="source">Joint Stock Commercial Bank for Foreign Trade of Vietnam - Vietcombank</string>
+
+
+</resources>
