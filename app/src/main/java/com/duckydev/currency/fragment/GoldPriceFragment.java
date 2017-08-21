@@ -1,6 +1,7 @@
-package duckydev.android.com.currency.fragment;
+package com.duckydev.currency.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,22 +17,25 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.duckydev.currency.Constains;
+import com.duckydev.currency.object.Currency;
+
 import java.util.ArrayList;
 
 import de.halfbit.pinnedsection.PinnedSectionListView;
-import duckydev.android.com.currency.R;
-import duckydev.android.com.currency.object.Currency;
-import duckydev.android.com.currency.object.GoldPrice;
+import com.duckydev.currency.R;
+
+import com.duckydev.currency.object.GoldPrice;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link GoldPriceFragment.OnFragmentInteractionListener} interface
+ * {@link OnGoldPriceFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link GoldPriceFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class GoldPriceFragment extends Fragment {
+public class GoldPriceFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -41,9 +46,11 @@ public class GoldPriceFragment extends Fragment {
     private int mParam1;
     private int mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnGoldPriceFragmentInteractionListener mListener;
 
     private ListView listView;
+    private TextView updateTextview;
+    private SwipeRefreshLayout refreshLayout;
     private GoldPinnedSectionListAdapter goldPinnedSectionListAdapter;
 
     public GoldPriceFragment() {
@@ -83,31 +90,53 @@ public class GoldPriceFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_gold_price, container, false);
         listView = (ListView) view.findViewById(R.id.listview);
+
+        TextView sourceView = (TextView) view.findViewById(R.id.sourceTv);
+        sourceView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constains.GOLD_PRICE_SRC));
+                startActivity(browserIntent);
+            }
+        });
+
+        updateTextview = (TextView) view.findViewById(R.id.updateTv);
+        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        refreshLayout.setOnRefreshListener(this);
         return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onRefreshPressed() {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onGoldPriceFragmentRequestUpdate();
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
+        if (context instanceof OnGoldPriceFragmentInteractionListener) {
+            mListener = (OnGoldPriceFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnCurrencyFragmentInteractionListener");
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void setRefreshing(boolean Isrefreshing) {
+        refreshLayout.setRefreshing(Isrefreshing);
+    }
+
+    @Override
+    public void onRefresh() {
+        onRefreshPressed();
     }
 
     /**
@@ -120,15 +149,18 @@ public class GoldPriceFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnGoldPriceFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onGoldPriceFragmentRequestUpdate();
     }
 
     public void updateListview(ArrayList<GoldPrice> goldPrices) {
-        goldPinnedSectionListAdapter = new GoldPinnedSectionListAdapter(getActivity(), goldPrices);
-        listView.setAdapter(goldPinnedSectionListAdapter);
-
+        if (goldPinnedSectionListAdapter == null) {
+            goldPinnedSectionListAdapter = new GoldPinnedSectionListAdapter(getActivity(), goldPrices);
+            listView.setAdapter(goldPinnedSectionListAdapter);
+        }
+        goldPinnedSectionListAdapter.notifyDataSetChanged();
+        updateTextview.setText("Cập nhật lúc: " + goldPrices.get(1).getUpdated());
     }
 
     public class GoldPinnedSectionListAdapter extends ArrayAdapter<GoldPrice> implements PinnedSectionListView.PinnedSectionListAdapter {
@@ -138,7 +170,7 @@ public class GoldPriceFragment extends Fragment {
         ArrayList<GoldPrice> dataSet = new ArrayList<>();
 
         public GoldPinnedSectionListAdapter(@NonNull Context context, ArrayList<GoldPrice> objects) {
-            super(context,0, objects);
+            super(context, 0, objects);
             this.mContext = context;
         }
 
@@ -154,6 +186,7 @@ public class GoldPriceFragment extends Fragment {
                 view = convertView;
             }
 
+
             TextView type = (TextView) view.findViewById((R.id.typeTv));
             TextView buy = (TextView) view.findViewById((R.id.buyTv));
             TextView sell = (TextView) view.findViewById((R.id.sellTv));
@@ -167,6 +200,7 @@ public class GoldPriceFragment extends Fragment {
             if (gold.getType() == Currency.SECTION) {
                 view.setBackgroundColor(Color.DKGRAY);
                 type.setTypeface(null, Typeface.BOLD);
+                type.setPadding(10, 0, 0, 0);
                 buy.setVisibility(View.GONE);
                 sell.setVisibility(View.GONE);
             }

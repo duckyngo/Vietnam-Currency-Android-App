@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
-        applicationId "duckydev.android.com.currency"
+        applicationId "com.duckydev.currency"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
@@ -13,10 +13,16 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled false
+            versionNameSuffix " Debug"
+        }
     }
+
 }
 
 dependencies {

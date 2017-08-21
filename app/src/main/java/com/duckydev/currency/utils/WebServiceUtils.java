@@ -1,7 +1,9 @@
-package duckydev.android.com.currency.utils;
+package com.duckydev.currency.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+
+import com.duckydev.currency.Constains;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -21,9 +23,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import duckydev.android.com.currency.Constains;
-import duckydev.android.com.currency.object.Currency;
-import duckydev.android.com.currency.object.GoldPrice;
+import com.duckydev.currency.object.Currency;
+import com.duckydev.currency.object.GoldPrice;
 
 /**
  * Created by DK on 8/11/2017.
@@ -44,10 +45,10 @@ public class WebServiceUtils {
             Element element = document.getDocumentElement();
             element.normalize();
 
-            String s = document.toString();
+            String updateTime = document.getElementsByTagName("DateTime").item(0).getTextContent();
             NodeList nList = document.getElementsByTagName(Constains.XML_EXRATE);
 
-            currencyList.add(new Currency(Currency.SECTION, "Mã tiền tệ", "", "Mua", "Chuyển khoản", "Bán"));
+            currencyList.add(new Currency(Currency.SECTION, "Mã tiền tệ", "", "Mua vào", "CK", "Bán ra"));
             for (int i = 0; i < nList.getLength(); i++) {
                 Currency currency = new Currency(Currency.ITEM);
                 Node node = nList.item(i);
@@ -58,6 +59,7 @@ public class WebServiceUtils {
                     currency.setBuy(element2.getAttribute(Constains.XML_BUY));
                     currency.setTransfer(element2.getAttribute(Constains.XML_TRANSFER));
                     currency.setSell(element2.getAttribute(Constains.XML_SELL));
+                    currency.setUpdated(updateTime);
                 }
                 currencyList.add(currency);
             }
@@ -86,7 +88,7 @@ public class WebServiceUtils {
             Element element = document.getDocumentElement();
             element.normalize();
 
-//            NodeList rateList = document.getElementsByTagName("ratelist");
+            String updateTime = (((Element)document.getElementsByTagName("ratelist").item(0)).getAttribute("updated"));
             NodeList nCityList = document.getElementsByTagName(Constains.XML_GOLD_CITY);
 
             for (int i = 0; i < nCityList.getLength(); i++) {
@@ -104,6 +106,7 @@ public class WebServiceUtils {
                             goldPrice.setGoldType(element3.getAttribute(Constains.XML_GOLD_TYPE));
                             goldPrice.setBuy(element3.getAttribute(Constains.XML_GOLD_BUY));
                             goldPrice.setSell(element3.getAttribute(Constains.XML_GOLD_SELL));
+                            goldPrice.setUpdated(updateTime);
                         }
                         goldPricesList.add(goldPrice);
                     }

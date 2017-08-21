@@ -1,12 +1,12 @@
-package duckydev.android.com.currency.database;
+package com.duckydev.currency.database;
 
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import duckydev.android.com.currency.Constains;
-import duckydev.android.com.currency.utils.LogUtils;
+import com.duckydev.currency.Constains;
+import com.duckydev.currency.utils.LogUtils;
 
 /**
  * Created by DK on 8/14/2017.

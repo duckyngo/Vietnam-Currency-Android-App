@@ -5,8 +5,17 @@
     <string name="gold_price">Gold Price</string>
     <string name="buy">Buy</string>
     <string name="transfer">Transfer</string>
-    <string name="sell">Mua</string>
-    <string name="source">Joint Stock Commercial Bank for Foreign Trade of Vietnam - Vietcombank</string>
-
+    <string name="sell">Sell</string>
+    <string name="currency_source_long">Joint Stock Commercial Bank for Foreign Trade of Vietnam - Vietcombank</string>
+    <string name="gold_type">Gold Type</string>
+    <string name="currency_type">Currency</string>
+    <string name="currency_source"><u>Source: Vietcombank</u></string>
+    <string name="gold_source"><u>Source: SJC</u></string>
+    <string name="rate_dialog_str_content">Please give your rating and help us make the app even better! Thank you!\"</string>
+    <string name="no_internet_dialog_str_content">The Application need access Internet for updating lastest currency and gold price.</string>
+    <string name="rate_app">Rate application</string>
+    <string name="rate_now">Rate now</string>
+    <string name="cancel">Cancel</string>
+    <string name="exit">Exit</string>
 
 </resources>

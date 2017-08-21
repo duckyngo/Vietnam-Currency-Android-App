@@ -1,7 +1,4 @@
-package duckydev.android.com.currency;
-
-import java.io.File;
-import java.lang.reflect.Field;
+package com.duckydev.currency;
 
 /**
  * Created by DK on 8/11/2017.
@@ -10,7 +7,9 @@ import java.lang.reflect.Field;
 public class Constains {
     // URL for retrieval of currency exchange rates and gold price
     public static final String CURRENCY_URL = "https://www.vietcombank.com.vn/ExchangeRates/ExrateXML.aspx";
+    public static final String CURRENCY_SRC = "https://www.vietcombank.com.vn/ExchangeRates/";
     public static final String GOLD_PRICE_URL = "http://sjc.com.vn/xml/tygiavang.xml";
+    public static final String GOLD_PRICE_SRC = "http://sjc.com.vn/price/";
 
     //  Constrains used for Database and table
 
@@ -50,6 +49,7 @@ public class Constains {
     //Constains for SharedPreferences
     public static final String CURRENCY_PREFERENCES = "CURRENCY_PREFERENCES";
     public static final String LANGUAGE = "LANGUAGE";
+    public static final String RATE_CLICK_COUNT = "rate_count";
 
     //Constants for web connection
 

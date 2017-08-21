@@ -1,11 +1,9 @@
-package duckydev.android.com.currency.database;
+package com.duckydev.currency.database;
 
 import android.database.Cursor;
 
-import java.util.ArrayList;
-
-import duckydev.android.com.currency.Constains;
-import duckydev.android.com.currency.object.Currency;
+import com.duckydev.currency.Constains;
+import com.duckydev.currency.object.Currency;
 
 /**
  * Created by DK on 8/14/2017.

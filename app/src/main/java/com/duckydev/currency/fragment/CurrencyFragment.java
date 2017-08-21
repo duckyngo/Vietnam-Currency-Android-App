@@ -1,14 +1,15 @@
-package duckydev.android.com.currency.fragment;
+package com.duckydev.currency.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,19 +23,19 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import de.halfbit.pinnedsection.PinnedSectionListView;
-import duckydev.android.com.currency.Constains;
-import duckydev.android.com.currency.R;
-import duckydev.android.com.currency.object.Currency;
+import com.duckydev.currency.Constains;
+import com.duckydev.currency.R;
+import com.duckydev.currency.object.Currency;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CurrencyFragment.OnFragmentInteractionListener} interface
+ * {@link OnCurrencyFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link CurrencyFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CurrencyFragment extends Fragment {
+public class CurrencyFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -45,23 +46,15 @@ public class CurrencyFragment extends Fragment {
     private int mParam2;
 
     private ListView listView;
-
+    private TextView updateTextview;
+    private SwipeRefreshLayout refreshLayout;
     private CurrencyPinnedSectionListAdapter currencyPinnedSectionListAdapter;
 
-    private OnFragmentInteractionListener mListener;
+    private OnCurrencyFragmentInteractionListener mListener;
 
     public CurrencyFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CurrencyFragment.
-     */
     // TODO: Rename and change types and number of parameters
     public static CurrencyFragment newInstance(int param1, int param2) {
         CurrencyFragment fragment = new CurrencyFragment();
@@ -88,25 +81,39 @@ public class CurrencyFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_currency, container, false);
         listView = (ListView) view.findViewById(R.id.listview);
+
+        TextView sourceView = (TextView) view.findViewById(R.id.sourceTv);
+        sourceView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constains.CURRENCY_SRC));
+                startActivity(browserIntent);
+            }
+        });
+
+        updateTextview = (TextView) view.findViewById(R.id.updateTv);
+        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        refreshLayout.setOnRefreshListener(this);
+
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+
+    public void onRefreshPressed() {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onCurrencyFragmentRequestRefresh();
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
+        if (context instanceof OnCurrencyFragmentInteractionListener) {
+            mListener = (OnCurrencyFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnCurrencyFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -115,24 +122,27 @@ public class CurrencyFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    @Override
+    public void onRefresh() {
+        onRefreshPressed();
     }
 
-    public void initListview(ArrayList<Currency> list){
-        currencyPinnedSectionListAdapter = new CurrencyPinnedSectionListAdapter(getActivity(), list);
-        listView.setAdapter(currencyPinnedSectionListAdapter);
+    public void setRefreshing(boolean Isrefreshing) {
+        refreshLayout.setRefreshing(Isrefreshing);
+    }
+
+    public interface OnCurrencyFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onCurrencyFragmentRequestRefresh();
+    }
+
+    public void initListview(ArrayList<Currency> currencies) {
+        if (currencyPinnedSectionListAdapter == null && currencies != null) {
+            currencyPinnedSectionListAdapter = new CurrencyPinnedSectionListAdapter(getActivity(), currencies);
+            listView.setAdapter(currencyPinnedSectionListAdapter);
+        }
+        currencyPinnedSectionListAdapter.notifyDataSetChanged();
+        updateTextview.setText("Cập nhật lúc: " + currencies.get(2).getUpdated());
     }
 
 
@@ -143,7 +153,7 @@ public class CurrencyFragment extends Fragment {
         ArrayList<Currency> dataSet = new ArrayList<>();
 
         public CurrencyPinnedSectionListAdapter(@NonNull Context context, ArrayList<Currency> objects) {
-            super(context,0, objects);
+            super(context, 0, objects);
             this.mContext = context;
         }
 
@@ -152,12 +162,13 @@ public class CurrencyFragment extends Fragment {
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             View view;
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            Currency currency = (Currency) getItem(position);
+            Currency currency = getItem(position);
             if (convertView == null) {
                 view = inflater.inflate(R.layout.currency_item_layout, null);
             } else {
                 view = convertView;
             }
+
 
             ImageView imageFlag = (ImageView) view.findViewById(R.id.flagIv);
             TextView countryCode = (TextView) view.findViewById((R.id.countryCodeTv));
@@ -177,13 +188,13 @@ public class CurrencyFragment extends Fragment {
                 transfer.setTypeface(null, Typeface.BOLD);
                 sell.setText(currency.getSell());
                 sell.setTypeface(null, Typeface.BOLD);
-            }else {
+            } else {
                 imageFlag.setImageResource(getResourceId(currency.getCurrencyCode().toLowerCase(), "drawable", getActivity().getPackageName()));
                 countryCode.setText(currency.getCurrencyCode());
                 countryName.setText(currency.getCurrencyName());
                 if (currency.getBuy().equalsIgnoreCase("0")) {
                     buy.setText("--      ");
-                }else {
+                } else {
                     buy.setText(NumberFormat.getNumberInstance(Locale.US).format(Double.parseDouble(currency.getBuy())));
                 }
                 transfer.setText(NumberFormat.getNumberInstance(Locale.US).format(Double.parseDouble(currency.getTransfer())));
@@ -209,8 +220,7 @@ public class CurrencyFragment extends Fragment {
         }
     }
 
-    public int getResourceId(String pVariableName, String pResourcename, String pPackageName)
-    {
+    public int getResourceId(String pVariableName, String pResourcename, String pPackageName) {
         try {
             return getResources().getIdentifier(pVariableName, pResourcename, pPackageName);
         } catch (Exception e) {
@@ -218,4 +228,8 @@ public class CurrencyFragment extends Fragment {
             return -1;
         }
     }
+
+
+
+
 }

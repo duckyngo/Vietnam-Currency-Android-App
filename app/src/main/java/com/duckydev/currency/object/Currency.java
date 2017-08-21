@@ -1,4 +1,4 @@
-package duckydev.android.com.currency.object;
+package com.duckydev.currency.object;
 
 /**
  * Created by DK on 8/11/2017.

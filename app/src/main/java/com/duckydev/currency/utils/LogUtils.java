@@ -1,4 +1,4 @@
-package duckydev.android.com.currency.utils;
+package com.duckydev.currency.utils;
 
 import android.util.Log;
 

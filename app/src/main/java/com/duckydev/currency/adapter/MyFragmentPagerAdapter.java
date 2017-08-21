@@ -1,4 +1,4 @@
-package duckydev.android.com.currency.adapter;
+package com.duckydev.currency.adapter;
 
 
 import android.content.Context;
@@ -10,9 +10,11 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 
-import duckydev.android.com.currency.R;
-import duckydev.android.com.currency.fragment.CurrencyFragment;
-import duckydev.android.com.currency.fragment.GoldPriceFragment;
+import com.duckydev.currency.fragment.CurrencyFragment;
+
+import com.duckydev.currency.R;
+
+import com.duckydev.currency.fragment.GoldPriceFragment;
 
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 2;

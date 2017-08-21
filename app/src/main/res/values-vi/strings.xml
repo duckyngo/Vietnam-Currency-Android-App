@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Tỷ giá-Giá vàng</string>
+
+    <string name="currency">Tỉ Giá</string>
+    <string name="gold_price">Giá Vàng</string>
+    <string name="buy">Mua vào</string>
+    <string name="transfer">CK</string>
+    <string name="sell">Bán ra</string>
+    <string name="currency_source_long">Joint Stock Commercial Bank for Foreign Trade of Vietnam - Vietcombank</string>
+    <string name="gold_type">Loại vàng</string>
+    <string name="currency_type">Mã tiền tệ</string>
+    <string name="currency_source"><u>Nguồn: Vietcombank</u></string>
+    <string name="gold_source"><u>Nguồn: SJC</u></string>
+    <string name="rate_dialog_str_content">Hãy đánh giá ứng dụng và giúp chúng tôi nâng cấp ứng dụng tốt hơn nữa! Cảm ơn!\"</string>
+    <string name="no_internet_dialog_str_content">Ứng dụng cần kết nối mạng để cập nhật thông tin tỉ giá và giá vàng mới nhất.</string>
+    <string name="rate_app">Đánh giá ứng dụng</string>
+    <string name="rate_now">Đánh giá ngay</string>
+    <string name="cancel">Hủy</string>
+    <string name="exit">Thoát</string>
+
+</resources>
